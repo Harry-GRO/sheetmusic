@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}{{ profile_user.username }} — SheetShare{% endblock %}
+
+{% block content %}
+
+<!-- Profile header -->
+<div class="profile-header mb-5">
+    <div class="row align-items-center">
+        <div class="col-auto">
+            {% if profile_user.profile.avatar %}
+                <img src="{{ profile_user.profile.avatar.url }}" class="profile-avatar" alt="">
+            {% else %}
+                <div class="profile-avatar-placeholder">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+            {% endif %}
+        </div>
+        <div class="col">
+            <h2 class="mb-1">
+                {{ profile_user.get_full_name|default:profile_user.username }}
+            </h2>
+            {% if profile_user.get_full_name %}
+                <div class="text-muted mb-1">@{{ profile_user.username }}</div>
+            {% endif %}
+            {% if profile_user.profile.bio %}
+                <p class="mb-1">{{ profile_user.profile.bio }}</p>
+            {% endif %}
+            {% if profile_user.profile.website %}
+                <a href="{{ profile_user.profile.website }}" class="small text-muted" target="_blank" rel="noopener">
+                    <i class="bi bi-link-45deg me-1"></i>{{ profile_user.profile.website }}
+                </a>
+            {% endif %}
+        </div>
+        <div class="col-auto text-end">
+            <div class="profile-stats d-flex gap-4">
+                <div class="text-center">
+                    <div class="stat-number">{{ posts.count }}</div>
+                    <div class="stat-label">Uploads</div>
+                </div>
+                <div class="text-center">
+                    <div class="stat-number">{{ profile_user.comments.count }}</div>
+                    <div class="stat-label">Comments</div>
+                </div>
+            </div>
+            {% if user == profile_user %}
+                <a href="{% url 'profile_edit' %}" class="btn btn-sm btn-outline-secondary mt-3">
+                    <i class="bi bi-pencil me-1"></i>Edit Profile
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Uploads grid -->
+<h4 class="mb-3">
+    {% if user == profile_user %}Your Uploads{% else %}Uploads by {{ profile_user.username }}{% endif %}
+</h4>
+
+{% if posts %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for post in posts %}
+        <div class="col">
+            <div class="card post-card h-100">
+                <a href="{% url 'post_detail' post.pk %}" class="post-card-thumb">
+                    {% if post.thumbnail %}
+                        <img src="{{ post.thumbnail.url }}" alt="{{ post.title }}" class="card-img-top">
+                    {% else %}
+                        <div class="card-img-placeholder">
+                            <i class="bi bi-file-music"></i>
+                        </div>
+                    {% endif %}
+                </a>
+                <div class="card-body">
+                    {% if post.genre %}
+                        <span class="genre-badge mb-2">{{ post.genre.name }}</span>
+                    {% endif %}
+                    <h5 class="card-title">
+                        <a href="{% url 'post_detail' post.pk %}" class="post-title-link">{{ post.title }}</a>
+                    </h5>
+                    <div class="d-flex justify-content-between text-muted small mt-2">
+                        <span>{{ post.created_at|date:"j M Y" }}</span>
+                        <span><i class="bi bi-download me-1"></i>{{ post.download_count }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state text-center py-5">
+        <i class="bi bi-music-note-list display-1 text-muted"></i>
+        <p class="mt-3 text-muted">
+            {% if user == profile_user %}You haven't uploaded anything yet.
+            {% else %}{{ profile_user.username }} hasn't uploaded anything yet.{% endif %}
+        </p>
+        {% if user == profile_user %}
+            <a href="{% url 'post_create' %}" class="btn btn-accent mt-1">Upload Sheet Music</a>
+        {% endif %}
+    </div>
+{% endif %}
+
+{% endblock %}

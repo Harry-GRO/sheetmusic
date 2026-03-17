@@ -1,0 +1,11 @@
+[
+  {"model": "forum.genre", "pk": 1, "fields": {"name": "Classical", "slug": "classical"}},
+  {"model": "forum.genre", "pk": 2, "fields": {"name": "Jazz", "slug": "jazz"}},
+  {"model": "forum.genre", "pk": 3, "fields": {"name": "Pop", "slug": "pop"}},
+  {"model": "forum.genre", "pk": 4, "fields": {"name": "Rock", "slug": "rock"}},
+  {"model": "forum.genre", "pk": 5, "fields": {"name": "Folk", "slug": "folk"}},
+  {"model": "forum.genre", "pk": 6, "fields": {"name": "Film & TV", "slug": "film-tv"}},
+  {"model": "forum.genre", "pk": 7, "fields": {"name": "Choral", "slug": "choral"}},
+  {"model": "forum.genre", "pk": 8, "fields": {"name": "Guitar / Tabs", "slug": "guitar-tabs"}},
+  {"model": "forum.genre", "pk": 9, "fields": {"name": "Other", "slug": "other"}}
+]

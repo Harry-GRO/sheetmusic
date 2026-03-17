@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}SheetShare — Browse Sheet Music{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+{% if not query and not active_genre %}
+<div class="hero-banner mb-5">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <h1 class="hero-title">Share the music<br>you love.</h1>
+            <p class="hero-sub">Upload, discover and download free sheet music from musicians around the world.</p>
+            {% if not user.is_authenticated %}
+                <a href="{% url 'register' %}" class="btn btn-accent btn-lg me-2">Get Started</a>
+                <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-lg">Log In</a>
+            {% else %}
+                <a href="{% url 'post_create' %}" class="btn btn-accent btn-lg">
+                    <i class="bi bi-upload me-2"></i>Upload Sheet Music
+                </a>
+            {% endif %}
+        </div>
+        <div class="col-lg-5 d-none d-lg-flex justify-content-end">
+            <div class="hero-icon-wrap">
+                <i class="bi bi-music-note-list hero-icon"></i>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Genre Filter -->
+<div class="mb-4 d-flex flex-wrap align-items-center gap-2">
+    <span class="text-muted small fw-semibold me-1">GENRE:</span>
+    <a href="{% url 'post_list' %}{% if query %}?q={{ query }}{% endif %}"
+       class="btn btn-sm {% if not active_genre %}btn-dark{% else %}btn-outline-secondary{% endif %}">
+        All
+    </a>
+    {% for genre in genres %}
+        <a href="?genre={{ genre.slug }}{% if query %}&q={{ query }}{% endif %}"
+           class="btn btn-sm {% if active_genre == genre.slug %}btn-dark{% else %}btn-outline-secondary{% endif %}">
+            {{ genre.name }}
+        </a>
+    {% endfor %}
+</div>
+
+<!-- Search feedback -->
+{% if query %}
+    <p class="text-muted mb-3">
+        Results for <strong>"{{ query }}"</strong> — {{ posts|length }} found
+        <a href="{% url 'post_list' %}" class="ms-2 small">Clear</a>
+    </p>
+{% endif %}
+
+<!-- Post Grid -->
+{% if posts %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for post in posts %}
+        <div class="col">
+            <div class="card post-card h-100">
+                <a href="{% url 'post_detail' post.pk %}" class="post-card-thumb">
+                    {% if post.thumbnail %}
+                        <img src="{{ post.thumbnail.url }}" alt="{{ post.title }}" class="card-img-top">
+                    {% else %}
+                        <div class="card-img-placeholder">
+                            <i class="bi bi-file-music"></i>
+                        </div>
+                    {% endif %}
+                </a>
+                <div class="card-body d-flex flex-column">
+                    {% if post.genre %}
+                        <span class="genre-badge mb-2">{{ post.genre.name }}</span>
+                    {% endif %}
+                    <h5 class="card-title mb-1">
+                        <a href="{% url 'post_detail' post.pk %}" class="post-title-link">{{ post.title }}</a>
+                    </h5>
+                    <p class="card-text text-muted small flex-grow-1">
+                        {{ post.description|truncatewords:20 }}
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                        <a href="{% url 'profile' post.author.username %}" class="author-link small">
+                            <i class="bi bi-person-circle me-1"></i>{{ post.author.username }}
+                        </a>
+                        <div class="d-flex gap-3 text-muted small">
+                            <span><i class="bi bi-chat me-1"></i>{{ post.comments.count }}</span>
+                            <span><i class="bi bi-download me-1"></i>{{ post.download_count }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state text-center py-5">
+        <i class="bi bi-music-note-list display-1 text-muted"></i>
+        <h4 class="mt-3">No sheet music found</h4>
+        <p class="text-muted">
+            {% if query %}No results for "{{ query }}". Try a different search.
+            {% else %}Be the first to upload!{% endif %}
+        </p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'post_create' %}" class="btn btn-accent mt-2">Upload Sheet Music</a>
+        {% endif %}
+    </div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }} Sheet Music — SheetShare{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+
+        <div class="page-header mb-4">
+            <h2>{{ action }} Sheet Music</h2>
+            <p class="text-muted mb-0">
+                {% if action == 'Upload' %}Share your sheet music with the community.
+                {% else %}Update your post details below.{% endif %}
+            </p>
+        </div>
+
+        <div class="form-card">
+            <form method="POST" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Title <span class="text-danger">*</span></label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="text-danger small mt-1">{{ form.title.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Genre</label>
+                    {{ form.genre }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Description</label>
+                    {{ form.description }}
+                    <div class="form-text">Describe the piece, difficulty level, instruments required, etc.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        {{ form.file.label }} <span class="text-danger">*</span>
+                    </label>
+                    {{ form.file }}
+                    <div class="form-text">Accepted: PDF, PNG, JPG, GIF. Max 20MB.</div>
+                    {% if form.file.errors %}
+                        <div class="text-danger small mt-1">{{ form.file.errors }}</div>
+                    {% endif %}
+                    {% if post.file %}
+                        <div class="mt-2 small text-muted">
+                            Current file: <strong>{{ post.file.name|slice:"12:" }}</strong>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">{{ form.thumbnail.label }}</label>
+                    {{ form.thumbnail }}
+                    <div class="form-text">Displayed as the post's cover image.</div>
+                    {% if post.thumbnail %}
+                        <div class="mt-2">
+                            <img src="{{ post.thumbnail.url }}" alt="Current thumbnail" class="rounded" style="max-height:80px;">
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-accent">
+                        <i class="bi bi-check-lg me-1"></i>
+                        {% if action == 'Upload' %}Publish{% else %}Save Changes{% endif %}
+                    </button>
+                    <a href="{% if post %}{% url 'post_detail' post.pk %}{% else %}{% url 'post_list' %}{% endif %}"
+                       class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
